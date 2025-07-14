@@ -10,8 +10,8 @@ import axios from "axios";
 // import axios from "axios";
 
 const axiosInstance = axios.create({
-  // baseURL: "https://blogitbackend-1.onrender.com",
-  baseURL: "http://127.0.0.1:3000",
+  baseURL: "https://blogitbackend-1.onrender.com",
+  
 });
 
 axiosInstance.interceptors.request.use(
