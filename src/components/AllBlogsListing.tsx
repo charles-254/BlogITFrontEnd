@@ -119,6 +119,7 @@ const AllBlogsListing = () => {
         {data &&
           data.allBlogs.map((blog: Blog) => {
             const isOwner = user?.username === blog.user.username;
+            console.log(blog.user.profileImageUrl)
             return (
               <Card sx={{ width: 400, bgcolor: "transparent" }} key={blog.id}>
                 <CardMedia

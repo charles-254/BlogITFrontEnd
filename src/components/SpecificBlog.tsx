@@ -26,6 +26,7 @@ import { LuCirclePlay } from "react-icons/lu";
 import { LuShare } from "react-icons/lu";
 import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
+import { MdDeleteOutline } from "react-icons/md";
 import remarkBreaks from "remark-breaks";
 
 function SpecificBlog() {
@@ -47,6 +48,9 @@ function SpecificBlog() {
   }
   function handleEdit() {
     navigate(`/blogs/edit/${blogId}`);
+  }
+  function handleDelete(){
+    navigate(`/blogs/delete/${blogId}`)
   }
 
   const { data } = useQuery({
@@ -88,7 +92,7 @@ function SpecificBlog() {
                 {data.blog.user.profileImageUrl ? (
                   <Avatar
                     sx={{ height: 35, width: 35 }}
-                    src={`http://localhost:3000${data.blog.user.profileImageUrl}`}
+                    src={data.blog.user.profileImageUrl}
                   />
                 ) : (
                   <Avatar
@@ -249,6 +253,34 @@ function SpecificBlog() {
                       )}
                     </IconButton>
                   </Tooltip>
+                  {
+                    isOwner && (<Tooltip
+                    title="Delete"
+                    placement="top"
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          fontSize: "1.4rem",
+                          backgroundColor: "rgba(50, 50, 50, 0.7);",
+                          color: "#fff",
+                          borderRadius: ".8rem",
+                          padding: ".3rem 1rem",
+                          boxShadow: 3,
+                        },
+                      },
+                      arrow: {
+                        sx: {
+                          color: "rgba(74, 74, 74, 0.702)",
+                        },
+                      },
+                    }}
+                    arrow
+                  >
+                    <IconButton sx={{ fontSize: "2.3rem" }} color="error" onClick={handleDelete}>
+                      <MdDeleteOutline/>
+                    </IconButton>
+                  </Tooltip>)
+                  }
                   <Tooltip
                     title="Listen"
                     placement="top"
@@ -339,6 +371,9 @@ function SpecificBlog() {
                   width={"100%"}
                 />
               </Box>
+              <Typography gutterBottom variant="h3" textTransform={'uppercase'} fontWeight={700} mt={'3rem'} >Synopsis</Typography>
+              <Typography variant="h5">{data.blog.synopsis}</Typography>
+              <Divider sx={{my:"3.5rem"}}></Divider>
               <Stack
                 component={"div"}
                 mt={"2rem"}

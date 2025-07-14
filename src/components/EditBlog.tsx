@@ -145,7 +145,7 @@ function EditBlog() {
         component={"form"}
         spacing={2}
         width={"40%"}
-        sx={{ p: 4, borderRadius: "15px", bgcolor: "rgba(0, 0, 0, 0.67)" }}
+        sx={{ p: 4, borderRadius: "15px"}}
       >
         {formError && (
           <Alert severity="error" sx={{ fontSize: "1.6rem" }}>
@@ -184,7 +184,7 @@ function EditBlog() {
             width: "100%",
             fontSize: "1.6rem",
             padding: "1rem",
-            backgroundColor: "inherit",
+            backgroundColor: "transparent",
             color: "inherit",
             borderRadius: "8px",
           }}
@@ -230,9 +230,8 @@ function EditBlog() {
             sx={{
               border: "1px solid #ccc",
               borderRadius: 2,
-              p: 2,
-              backgroundColor: "rgb(74, 74, 74)",
-              mx: "2rem",
+              p: 4,
+              m: "2rem",
             }}
           >
             <Typography variant="h3" fontWeight={600} mb={2}>

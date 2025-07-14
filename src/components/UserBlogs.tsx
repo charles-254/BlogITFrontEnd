@@ -13,7 +13,7 @@ import {
   Badge,
 } from "@mui/material";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axios";
@@ -26,7 +26,6 @@ import { CiCircleCheck } from "react-icons/ci";
 import { FaBookmark } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
-
 const UserBlogs = () => {
   type Blog = {
     id: string;
@@ -39,6 +38,7 @@ const UserBlogs = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [uploading, setUploading ] = useState(false)
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -56,6 +56,7 @@ const UserBlogs = () => {
   }, [imageFile]);
 
  const uploadImage = async () => {
+  setUploading(true)
   if (!imageFile) return;
 
   const formData = new FormData();
@@ -70,7 +71,7 @@ const UserBlogs = () => {
     );
 
     const uploadedImageUrl = response.data.secure_url;
-
+    
     const newUserInfo = {
       ...user,
       profileImageUrl: uploadedImageUrl,
@@ -79,14 +80,44 @@ const UserBlogs = () => {
     setUser(newUserInfo as any);
     setFormError("");
     setSuccessMessage("Image uploaded successfully.");
+    return uploadedImageUrl
   } catch (err: any) {
     setFormError("Failed to upload image. Try again.");
     console.error(err);
   } finally {
+    setUploading(false)
     setDrawerOpen(false);
   }
 };
 
+type User = {
+  profileImageUrl: string 
+}
+
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["update-user-details"],
+    mutationFn: async (updatedUserInfo: User) => {
+      const response = await axiosInstance.patch("/api/user/", updatedUserInfo);
+      return response.data;
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        setFormError(error.response?.data.message);
+      } else setFormError("Something went wrong.");
+    },
+    onSuccess: (data) => {
+      setFormError("");
+      setSuccessMessage(data.message)
+
+    },
+  });
+
+  const updateUserProfile = async () => {
+    setFormError("")
+    const imageUrl = await uploadImage()
+    const newUserInfo = { profileImageUrl: imageUrl}
+    mutate(newUserInfo);
+  }
 
   const { data } = useQuery({
     queryKey: ["get-user-blogs"],
@@ -319,11 +350,13 @@ const UserBlogs = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={uploadImage}
+            onClick={updateUserProfile}
+            loading={isPending || uploading}
             sx={{ mt: "1rem" }}
           >
             upload profile image
           </Button>
+          
         </Box>
       </Drawer>
     </Stack>

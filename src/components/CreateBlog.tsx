@@ -29,6 +29,7 @@ function CreateBlog() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     if (!imageFile) {
@@ -46,6 +47,7 @@ function CreateBlog() {
     setPreviewUrl("");
   }
 const uploadImageToCloudinary = async () => {
+  setUploading(true)
     if (!imageFile) return null;
 
     const formData = new FormData();
@@ -58,11 +60,12 @@ const uploadImageToCloudinary = async () => {
         "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
         formData
       );
-      console.log(res.data.secure_url)
       return res.data.secure_url; 
     } catch (err: any) {
       setFormError("Image upload failed. Try again.");
       return null;
+    }finally{
+      setUploading(false)
     }
   };
 
@@ -108,7 +111,7 @@ const uploadImageToCloudinary = async () => {
             fontSize: { xs: "2.5rem", md: "3.5rem" },
           }}
         >
-          Share Your Voice with the World 🌍
+          Share Your Voice with the World.
         </Typography>
 
         <Typography
@@ -163,7 +166,7 @@ const uploadImageToCloudinary = async () => {
         component={"form"}
         spacing={2}
         width={"40%"}
-        sx={{ p: 4, borderRadius: "15px", bgcolor: "rgba(0, 0, 0, 0.67)" }}
+        sx={{ p: 4, borderRadius: "15px"}}
       >
         {formError && (
           <Alert severity="error" sx={{ fontSize: "1.6rem" }}>
@@ -187,7 +190,7 @@ const uploadImageToCloudinary = async () => {
         <TextField
           label="Blog Synopsis"
           required
-          InputProps={{ style: { fontSize: "1.8rem" } }}
+          InputProps={{ style: { fontSize: "1.8rem", color:"white" } }}
           InputLabelProps={{ style: { fontSize: "1.6rem" } }}
           value={synopsis}
           onChange={(e) => setSynopsis(e.target.value)}
@@ -202,8 +205,8 @@ const uploadImageToCloudinary = async () => {
             width: "100%",
             fontSize: "1.6rem",
             padding: "1rem",
-            backgroundColor: "inherit",
-            color: "inherit",
+            color:"inherit",
+            backgroundColor:"transparent",
             borderRadius: "8px",
           }}
         />
@@ -229,7 +232,7 @@ const uploadImageToCloudinary = async () => {
             variant="contained"
             color="primary"
             onClick={handleCreateBlog}
-            disabled={isPending}
+            loading={isPending || uploading}
           >
             Publish blog
           </Button>
@@ -246,11 +249,10 @@ const uploadImageToCloudinary = async () => {
         {previewMode && (
           <Box
             sx={{
-              border: "1px solid #ccc",
+              border: "1px solid #cccc",
               borderRadius: 2,
-              p: 2,
-              backgroundColor: "rgb(74, 74, 74)",
-              mx: "2rem",
+              p: 5,
+              m: "2rem",
             }}
           >
             <Typography variant="h3" fontWeight={600} mb={2}>
