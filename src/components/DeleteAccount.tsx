@@ -115,7 +115,7 @@ function DeleteAccount() {
           variant="contained"
           color="error"
           fullWidth
-          disabled={isPending}
+          loading={isPending}
           onClick={handleDelete}
         >
           Delete My Account

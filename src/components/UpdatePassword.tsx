@@ -151,7 +151,7 @@ const UpdatePassword = () => {
             <Button
               variant="contained"
               color="secondary"
-              disabled={isPending}
+              loading={isPending}
               onClick={handleUpdateUserPassword}
             >
               Change Password

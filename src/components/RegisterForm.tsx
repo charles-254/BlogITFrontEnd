@@ -189,7 +189,7 @@ function RegisterForm() {
           variant="contained"
           color="secondary"
           onClick={handleSignUp}
-          disabled={isPending}
+          loading={isPending}
         >
           Register
         </Button>

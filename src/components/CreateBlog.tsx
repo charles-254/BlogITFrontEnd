@@ -29,7 +29,7 @@ function CreateBlog() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
-  const [uploading, setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!imageFile) {
@@ -46,26 +46,26 @@ function CreateBlog() {
     setSynopsis("");
     setPreviewUrl("");
   }
-const uploadImageToCloudinary = async () => {
-  setUploading(true)
+  const uploadImageToCloudinary = async () => {
+    setUploading(true);
     if (!imageFile) return null;
 
     const formData = new FormData();
     formData.append("file", imageFile);
     formData.append("upload_preset", "blogimages");
-    formData.append("cloud_name", "dofekmtxb"); 
+    formData.append("cloud_name", "dofekmtxb");
 
     try {
       const res = await axios.post(
         "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
-        formData
+        formData,
       );
-      return res.data.secure_url; 
+      return res.data.secure_url;
     } catch (err: any) {
       setFormError("Image upload failed. Try again.");
       return null;
-    }finally{
-      setUploading(false)
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -96,8 +96,6 @@ const uploadImageToCloudinary = async () => {
     const blogData = { title, synopsis, content, imageUrl: uploadedUrl };
     mutate(blogData);
   };
-
-
 
   return (
     <Stack>
@@ -166,7 +164,7 @@ const uploadImageToCloudinary = async () => {
         component={"form"}
         spacing={2}
         width={"40%"}
-        sx={{ p: 4, borderRadius: "15px"}}
+        sx={{ p: 4, borderRadius: "15px" }}
       >
         {formError && (
           <Alert severity="error" sx={{ fontSize: "1.6rem" }}>
@@ -190,7 +188,7 @@ const uploadImageToCloudinary = async () => {
         <TextField
           label="Blog Synopsis"
           required
-          InputProps={{ style: { fontSize: "1.8rem", color:"white" } }}
+          InputProps={{ style: { fontSize: "1.8rem", color: "white" } }}
           InputLabelProps={{ style: { fontSize: "1.6rem" } }}
           value={synopsis}
           onChange={(e) => setSynopsis(e.target.value)}
@@ -205,8 +203,8 @@ const uploadImageToCloudinary = async () => {
             width: "100%",
             fontSize: "1.6rem",
             padding: "1rem",
-            color:"inherit",
-            backgroundColor:"transparent",
+            color: "inherit",
+            backgroundColor: "transparent",
             borderRadius: "8px",
           }}
         />

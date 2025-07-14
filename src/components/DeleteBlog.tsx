@@ -115,7 +115,7 @@ const DeleteBlog = () => {
           variant="contained"
           color="error"
           fullWidth
-          disabled={isPending}
+          loading={isPending}
           onClick={handleDelete}
           sx={{ fontSize: "1.4rem", py: 1.2 }}
         >

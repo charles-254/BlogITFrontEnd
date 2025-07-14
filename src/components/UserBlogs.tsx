@@ -38,7 +38,7 @@ const UserBlogs = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [uploading, setUploading ] = useState(false)
+  const [uploading, setUploading] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -55,44 +55,44 @@ const UserBlogs = () => {
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
- const uploadImage = async () => {
-  setUploading(true)
-  if (!imageFile) return;
+  const uploadImage = async () => {
+    setUploading(true);
+    if (!imageFile) return;
 
-  const formData = new FormData();
-  formData.append("file", imageFile);
-  formData.append("upload_preset", "blogimages"); 
-  formData.append("cloud_name", "dofekmtxb");
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", "blogimages");
+    formData.append("cloud_name", "dofekmtxb");
 
-  try {
-    const response = await axios.post(
-      "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
-      formData
-    );
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
+        formData,
+      );
 
-    const uploadedImageUrl = response.data.secure_url;
-    
-    const newUserInfo = {
-      ...user,
-      profileImageUrl: uploadedImageUrl,
-    };
+      const uploadedImageUrl = response.data.secure_url;
 
-    setUser(newUserInfo as any);
-    setFormError("");
-    setSuccessMessage("Image uploaded successfully.");
-    return uploadedImageUrl
-  } catch (err: any) {
-    setFormError("Failed to upload image. Try again.");
-    console.error(err);
-  } finally {
-    setUploading(false)
-    setDrawerOpen(false);
-  }
-};
+      const newUserInfo = {
+        ...user,
+        profileImageUrl: uploadedImageUrl,
+      };
 
-type User = {
-  profileImageUrl: string 
-}
+      setUser(newUserInfo as any);
+      setFormError("");
+      setSuccessMessage("Image uploaded successfully.");
+      return uploadedImageUrl;
+    } catch (err: any) {
+      setFormError("Failed to upload image. Try again.");
+      console.error(err);
+    } finally {
+      setUploading(false);
+      setDrawerOpen(false);
+    }
+  };
+
+  type User = {
+    profileImageUrl: string;
+  };
 
   const { isPending, mutate } = useMutation({
     mutationKey: ["update-user-details"],
@@ -107,17 +107,16 @@ type User = {
     },
     onSuccess: (data) => {
       setFormError("");
-      setSuccessMessage(data.message)
-
+      setSuccessMessage(data.message);
     },
   });
 
   const updateUserProfile = async () => {
-    setFormError("")
-    const imageUrl = await uploadImage()
-    const newUserInfo = { profileImageUrl: imageUrl}
+    setFormError("");
+    const imageUrl = await uploadImage();
+    const newUserInfo = { profileImageUrl: imageUrl };
     mutate(newUserInfo);
-  }
+  };
 
   const { data } = useQuery({
     queryKey: ["get-user-blogs"],
@@ -126,7 +125,7 @@ type User = {
       return response.data;
     },
   });
-
+  const blogCount = data?.userBlogs?.length;
   return (
     <Stack>
       <Stack
@@ -156,7 +155,7 @@ type User = {
           </Box>
           <Box display={"flex"} alignItems={"center"} gap={"1rem"}>
             <Badge
-              badgeContent={117}
+              badgeContent={blogCount}
               max={99}
               color="primary"
               sx={{
@@ -267,10 +266,13 @@ type User = {
               <CardContent>
                 <Typography
                   gutterBottom
-                  variant="h4"
+                  variant="h5"
+                  fontSize={"1.65rem"}
                   textTransform={"capitalize"}
                 >
-                  {blog.title}
+                  {blog.title.length > 85
+                    ? blog.title.slice(0, 85) + "  ..."
+                    : blog.title}
                 </Typography>
                 <Typography
                   variant="h5"
@@ -356,7 +358,6 @@ type User = {
           >
             upload profile image
           </Button>
-          
         </Box>
       </Drawer>
     </Stack>

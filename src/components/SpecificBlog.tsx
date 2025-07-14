@@ -34,7 +34,7 @@ function SpecificBlog() {
   const { user } = useUser();
   const [saved, setSaved] = useState(false);
   const [clapped, setClapped] = useState(false);
-  const [following, setFolowing] = useState(false);
+  const [following, setFollowing] = useState(false);
   const navigate = useNavigate();
 
   function handleSave() {
@@ -44,20 +44,19 @@ function SpecificBlog() {
     setClapped(!clapped);
   }
   function handleFollow() {
-    setFolowing(!following);
+    setFollowing(!following);
   }
   function handleEdit() {
     navigate(`/blogs/edit/${blogId}`);
   }
-  function handleDelete(){
-    navigate(`/blogs/delete/${blogId}`)
+  function handleDelete() {
+    navigate(`/blogs/delete/${blogId}`);
   }
 
   const { data } = useQuery({
     queryKey: ["get-specific-blog"],
     queryFn: async () => {
       const response = await axiosInstance.get(`/api/blogs/${blogId}`);
-      console.log(response.data);
       return response.data;
     },
   });
@@ -253,34 +252,38 @@ function SpecificBlog() {
                       )}
                     </IconButton>
                   </Tooltip>
-                  {
-                    isOwner && (<Tooltip
-                    title="Delete"
-                    placement="top"
-                    componentsProps={{
-                      tooltip: {
-                        sx: {
-                          fontSize: "1.4rem",
-                          backgroundColor: "rgba(50, 50, 50, 0.7);",
-                          color: "#fff",
-                          borderRadius: ".8rem",
-                          padding: ".3rem 1rem",
-                          boxShadow: 3,
+                  {isOwner && (
+                    <Tooltip
+                      title="Delete"
+                      placement="top"
+                      componentsProps={{
+                        tooltip: {
+                          sx: {
+                            fontSize: "1.4rem",
+                            backgroundColor: "rgba(50, 50, 50, 0.7);",
+                            color: "#fff",
+                            borderRadius: ".8rem",
+                            padding: ".3rem 1rem",
+                            boxShadow: 3,
+                          },
                         },
-                      },
-                      arrow: {
-                        sx: {
-                          color: "rgba(74, 74, 74, 0.702)",
+                        arrow: {
+                          sx: {
+                            color: "rgba(74, 74, 74, 0.702)",
+                          },
                         },
-                      },
-                    }}
-                    arrow
-                  >
-                    <IconButton sx={{ fontSize: "2.3rem" }} color="error" onClick={handleDelete}>
-                      <MdDeleteOutline/>
-                    </IconButton>
-                  </Tooltip>)
-                  }
+                      }}
+                      arrow
+                    >
+                      <IconButton
+                        sx={{ fontSize: "2.3rem" }}
+                        color="error"
+                        onClick={handleDelete}
+                      >
+                        <MdDeleteOutline />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                   <Tooltip
                     title="Listen"
                     placement="top"
@@ -371,15 +374,24 @@ function SpecificBlog() {
                   width={"100%"}
                 />
               </Box>
-              <Typography gutterBottom variant="h3" textTransform={'uppercase'} fontWeight={700} mt={'3rem'} >Synopsis</Typography>
-              <Typography variant="h5">{data.blog.synopsis}</Typography>
-              <Divider sx={{my:"3.5rem"}}></Divider>
-              <Stack
-                component={"div"}
-                mt={"2rem"}
-                mb={"8rem"}
+              <Typography
+                gutterBottom
+                variant="h3"
+                textTransform={"uppercase"}
+                fontWeight={700}
+                mt={"3rem"}
+              >
+                Synopsis
+              </Typography>
+              <Typography
+                variant="h5"
+                color="text.secondary"
                 fontSize={"1.6rem"}
               >
+                {data.blog.synopsis}
+              </Typography>
+              <Divider sx={{ my: "3.5rem" }}></Divider>
+              <Stack component={"div"} mb={"8rem"} fontSize={"1.6rem"}>
                 <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                   {data.blog.content}
                 </ReactMarkdown>

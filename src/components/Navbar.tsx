@@ -64,11 +64,7 @@ function Navbar({ isDarkMode, toggleTheme }: Props) {
             {user.profileImageUrl ? (
               <Avatar sx={{ height: 50, width: 50 }}>
                 {" "}
-                <img
-                  src={user.profileImageUrl}
-                  alt=""
-                  width={80}
-                />
+                <img src={user.profileImageUrl} alt="" width={80} />
               </Avatar>
             ) : (
               <Avatar

@@ -125,7 +125,7 @@ function LoginForm() {
           variant="contained"
           color="primary"
           onClick={handleLogin}
-          disabled={isPending}
+          loading={isPending}
         >
           Login
         </Button>

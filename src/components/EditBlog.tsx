@@ -27,8 +27,8 @@ function EditBlog() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const { blogId } = useParams();
-
 
   const { data } = useQuery({
     queryKey: ["get-specific-blog"],
@@ -46,69 +46,72 @@ function EditBlog() {
     }
   }, [data]);
 
-    useEffect(() => {
-      if (!imageFile) {
-        setPreviewUrl(null);
-        return;
-      }
-      const url = URL.createObjectURL(imageFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }, [imageFile]);
-    function clearForm() {
-      setTitle("");
-      setContent("");
-      setSynopsis("");
-      setPreviewUrl("");
+  useEffect(() => {
+    if (!imageFile) {
+      setPreviewUrl(null);
+      return;
     }
+    const url = URL.createObjectURL(imageFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+  function clearForm() {
+    setTitle("");
+    setContent("");
+    setSynopsis("");
+    setPreviewUrl("");
+  }
   const uploadImageToCloudinary = async () => {
-      if (!imageFile) return null;
-  
-      const formData = new FormData();
-      formData.append("file", imageFile);
-      formData.append("upload_preset", "blogimages");
-      formData.append("cloud_name", "dofekmtxb"); 
-  
-      try {
-        const res = await axios.post(
-          "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
-          formData
-        );
-        console.log(res.data.secure_url)
-        return res.data.secure_url; 
-      } catch (err: any) {
-        setFormError("Image upload failed. Try again.");
-        return null;
-      }
-    };
-  
-    const { isPending, mutate } = useMutation({
-      mutationKey: ["create-blog"],
-      mutationFn: async (newBlog: {
-        title: string;
-        synopsis: string;
-        content: string;
-        imageUrl: string;
-      }) => {
-        const res = await axiosInstance.patch(`/api/blogs/${blogId}`, newBlog);
-        return res.data;
-      },
-      onError: (err: any) => {
-        setFormError(err?.response?.data?.message || "Error occurred");
-      },
-      onSuccess: () => {
-        setSuccessMessage("Blog Updated successfully.");
-        clearForm();
-      },
-    });
-  
-    const handleUpdateBlog = async () => {
-      setFormError("");
-      const uploadedUrl = await uploadImageToCloudinary();
-      if (!uploadedUrl) return;
-      const blogData = { title, synopsis, content, imageUrl: uploadedUrl };
-      mutate(blogData);
-    };
+    setUploading(true);
+    if (!imageFile) return null;
+
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", "blogimages");
+    formData.append("cloud_name", "dofekmtxb");
+
+    try {
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dofekmtxb/image/upload",
+        formData,
+      );
+      console.log(res.data.secure_url);
+      return res.data.secure_url;
+    } catch (err: any) {
+      setFormError("Image upload failed. Try again.");
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["create-blog"],
+    mutationFn: async (newBlog: {
+      title: string;
+      synopsis: string;
+      content: string;
+      imageUrl: string;
+    }) => {
+      const res = await axiosInstance.patch(`/api/blogs/${blogId}`, newBlog);
+      return res.data;
+    },
+    onError: (err: any) => {
+      setFormError(err?.response?.data?.message || "Error occurred");
+    },
+    onSuccess: () => {
+      setSuccessMessage("Blog Updated successfully.");
+      clearForm();
+    },
+  });
+
+  const handleUpdateBlog = async () => {
+    setFormError("");
+    const uploadedUrl = await uploadImageToCloudinary();
+    if (!uploadedUrl) return;
+    const blogData = { title, synopsis, content, imageUrl: uploadedUrl };
+    mutate(blogData);
+  };
   return (
     <Stack>
       <Box sx={{ my: 5, justifyItems: "center", textAlign: "center" }}>
@@ -145,7 +148,7 @@ function EditBlog() {
         component={"form"}
         spacing={2}
         width={"40%"}
-        sx={{ p: 4, borderRadius: "15px"}}
+        sx={{ p: 4, borderRadius: "15px" }}
       >
         {formError && (
           <Alert severity="error" sx={{ fontSize: "1.6rem" }}>
@@ -211,7 +214,7 @@ function EditBlog() {
             variant="contained"
             color="primary"
             onClick={handleUpdateBlog}
-            loading={isPending}
+            loading={isPending || uploading}
           >
             Update blog
           </Button>

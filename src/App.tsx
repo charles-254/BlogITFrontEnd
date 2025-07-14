@@ -13,6 +13,7 @@ import Blog from "./pages/Blog";
 import UpdateBlog from "./pages/UpdateBlog";
 import CreateNewBlog from "./pages/CreateNewBlog";
 import AccountProfile from "./pages/AccountProfile";
+import UserProfile from "./pages/UserProfile";
 import Protected from "./components/Protected";
 import UpdatePassword from "./components/UpdatePassword";
 import DeleteAccount from "./components/DeleteAccount";
@@ -120,6 +121,14 @@ function App() {
             element={
               <Protected>
                 <DeleteBlog />
+              </Protected>
+            }
+          />
+          <Route
+            path="/blogs/user/:username"
+            element={
+              <Protected>
+                <UserProfile />
               </Protected>
             }
           />

@@ -1,33 +1,34 @@
 import {
-  Typography,
   Stack,
-  Tooltip,
-  Card,
-  IconButton,
-  CardMedia,
-  CardActions,
-  CardContent,
+  Typography,
   Avatar,
   Button,
-  Link,
+  Divider,
+  Card,
+  CardContent,
+  CardMedia,
+  Box,
+  Chip,
+  Tooltip,
+  CardActions,
+  IconButton,
 } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useParams } from "react-router-dom";
 import axiosInstance from "../api/axios";
+import { useQuery } from "@tanstack/react-query";
+import { deepOrange } from "@mui/material/colors";
+import { useState } from "react";
 import dayjs from "dayjs";
+import { IoMailOutline } from "react-icons/io5";
 import { PiGreaterThanBold } from "react-icons/pi";
 import { PiHandsClappingThin } from "react-icons/pi";
 import { MdOutlineBookmarkAdd } from "react-icons/md";
 import { AiOutlineMessage } from "react-icons/ai";
 import { FaBookmark } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
-import { TypeAnimation } from "react-type-animation";
-import Loader from "./Loader";
-
 import useUser from "../store/UserStore";
 
-const AllBlogsListing = () => {
+function UserProfileDetails() {
   type Blog = {
     id: string;
     title: string;
@@ -41,9 +42,13 @@ const AllBlogsListing = () => {
       lastName: string;
       email: string;
       profileImageUrl: string | null;
+      createdAt: string;
     };
   };
+
+  const { username } = useParams();
   const { user } = useUser();
+  const [following, setFollowing] = useState(false);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const handleSave = (id: string) => {
     setSavedIds((prev) =>
@@ -53,72 +58,124 @@ const AllBlogsListing = () => {
     );
   };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["get-all-blogs"],
+  const { data } = useQuery({
+    queryKey: ["get-userSpecific-blogs", username],
     queryFn: async () => {
-      const response = await axiosInstance.get("/api/blogs");
+      const response = await axiosInstance.get(`/api/blogs/user/${username}`);
       return response.data;
     },
   });
+  function handleFollow() {
+    setFollowing(!following);
+  }
+  if (!data || !data.userBlogs || data.userBlogs.length === 0) {
+    return (
+      <Typography variant="h4" sx={{ m: 4 }}>
+        No user blogs found or user does not exist.
+      </Typography>
+    );
+  }
+  const userInfo = data.userBlogs[0].user;
+  const blogCount = data.userBlogs.length;
+
   return (
-    <Stack>
-      <Stack spacing={1} mb={4} textAlign="center">
-        <Typography
-          variant="h2"
-          fontWeight={600}
-          color="primary.main"
-          textTransform={"capitalize"}
-        >
-          <TypeAnimation
-            sequence={[
-              "Fresh From the Writers.",
-              2000,
-              "",
-              500,
-              "Stories Worth Reading.",
-              2000,
-              "",
-              500,
-              "Write. Read. Repeat.",
-              2000,
-              "",
-              500,
-              "Thoughts from the Terminal.",
-              2000,
-              "",
-              500,
-              "Where Words Meet Purpose.",
-              2000,
-              "",
-              500,
-            ]}
-            speed={40}
-            repeat={Infinity}
-            style={{
-              fontSize: "3.5rem",
-              color: "#00f5d4",
-              display: "inline-block",
+    <Stack spacing={4} sx={{ px: 4, py: 6 }}>
+      <Stack direction="row" spacing={4} alignItems="center">
+        {userInfo.profileImageUrl ? (
+          <Avatar
+            src={userInfo.profileImageUrl}
+            sx={{ width: 100, height: 100 }}
+          />
+        ) : (
+          <Avatar
+            sx={{
+              bgcolor: deepOrange[500],
+              width: 100,
+              height: 100,
+              fontSize: "2.5rem",
+            }}
+          >
+            {userInfo.firstName[0].toUpperCase()}
+            {userInfo.lastName[0].toUpperCase()}
+          </Avatar>
+        )}
+
+        <Stack>
+          <Typography variant="h3" fontWeight={700}>
+            {userInfo.firstName} {userInfo.lastName}
+          </Typography>
+          <Typography variant="h5" color="text.secondary">
+            @{userInfo.username}
+          </Typography>
+        </Stack>
+        <Stack spacing={1}>
+          <Typography
+            variant="h5"
+            display={"flex"}
+            alignItems={"center"}
+            gap={".4rem"}
+          >
+            <IoMailOutline
+              style={{ fontSize: "2.3rem", color: "rgb(156, 156, 156)" }}
+            />
+            <a
+              href={`mailto:${userInfo.email}`}
+              style={{ color: "#2196f3", textDecoration: "none" }}
+            >
+              {userInfo.email}
+            </a>
+          </Typography>
+          <Typography variant="h5">{blogCount} blog(s) published</Typography>
+        </Stack>
+
+        <Stack spacing={1}>
+          <Chip
+            label="213 followers"
+            variant="outlined"
+            color="secondary"
+            sx={{
+              borderRadius: 25,
+              height: "3rem",
+              fontSize: "1.2rem",
+              fontWeight: 600,
             }}
           />
-        </Typography>
-        <Typography
-          variant="h6"
-          color="text.secondary"
-          sx={{ fontSize: "1.6rem", maxWidth: "60%", alignSelf: "center" }}
-        >
-          Discover the most recent thoughts, stories, and ideas shared by our
-          community.
-        </Typography>
+          <Chip
+            label="15 following"
+            variant="outlined"
+            color="secondary"
+            sx={{
+              borderRadius: 25,
+              height: "3rem",
+              fontSize: "1.2rem",
+              fontWeight: 600,
+            }}
+          />
+        </Stack>
+        <Stack spacing={1}>
+          <Typography variant="h5">
+            BlogIt member since{" "}
+            {dayjs(userInfo.createdAt).format("DD MMMM YYYY")}
+          </Typography>
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: 25, height: "3rem", width: "fit-content" }}
+            onClick={handleFollow}
+          >
+            {following ? "following" : "follow"}
+          </Button>
+        </Stack>
       </Stack>
-      {isLoading && <Loader />}
-      <Stack
-        direction={"row"}
-        flexWrap={"wrap"}
-        gap={2}
-        justifyContent={"center"}
-      >
-        {data &&
-          data.allBlogs.map((blog: Blog) => {
+
+      <Divider />
+      <Box>
+        <Stack
+          flexWrap={"wrap"}
+          direction={"row"}
+          justifyContent={"center"}
+          gap={2}
+        >
+          {data.userBlogs.map((blog: Blog) => {
             const isOwner = user?.username === blog.user.username;
             return (
               <Card sx={{ width: 400, bgcolor: "transparent" }} key={blog.id}>
@@ -168,12 +225,9 @@ const AllBlogsListing = () => {
                       </Avatar>
                     )}
                     <Stack direction={"row"} spacing={2}>
-                      <Link
-                        variant="h5"
-                        href={`/blogs/user/${blog.user.username}`}
-                      >
+                      <Typography variant="h5">
                         {isOwner ? "By You" : blog.user.username}
-                      </Link>
+                      </Typography>
                       <Typography variant="h5" mx={1}>
                         •
                       </Typography>
@@ -296,9 +350,10 @@ const AllBlogsListing = () => {
               </Card>
             );
           })}
-      </Stack>
+        </Stack>
+      </Box>
     </Stack>
   );
-};
+}
 
-export default AllBlogsListing;
+export default UserProfileDetails;
