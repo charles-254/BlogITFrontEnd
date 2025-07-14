@@ -6,7 +6,7 @@ import {
   Divider,
   IconButton,
   Tooltip,
-  Box,
+  Box, Link
 } from "@mui/material";
 import axiosInstance from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
@@ -107,7 +107,7 @@ function SpecificBlog() {
                     {data.blog.user.lastName[0].toUpperCase()}
                   </Avatar>
                 )}
-                <Typography variant="h5">{data.blog.user.username}</Typography>
+                  <Link variant="h5" href={`/blogs/user/${data.blog.user.username}`}>{data.blog.user.username}</Link>  
                 <Button
                   variant="outlined"
                   sx={{ borderRadius: 25, height: "3rem" }}

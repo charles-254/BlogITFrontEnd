@@ -53,11 +53,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
-            path="/dashboard"
+            path="/blogs"
             element={
-              <Protected>
+              
                 <Dashboard />
-              </Protected>
+             
             }
           />
           <Route
@@ -103,9 +103,7 @@ function App() {
           <Route
             path="/blogs/:blogId"
             element={
-              <Protected>
                 <Blog />
-              </Protected>
             }
           />
           <Route
@@ -127,9 +125,9 @@ function App() {
           <Route
             path="/blogs/user/:username"
             element={
-              <Protected>
+              
                 <UserProfile />
-              </Protected>
+              
             }
           />
         </Routes>

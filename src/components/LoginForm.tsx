@@ -45,7 +45,7 @@ function LoginForm() {
       setUser(data.userInfo);
       const token = data.token;
       localStorage.setItem("authToken", token);
-      navigate("/dashboard");
+      navigate("/blogs");
     },
   });
 

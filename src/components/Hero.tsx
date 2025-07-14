@@ -65,12 +65,12 @@ const Hero = () => (
       </Typography>
       <Stack direction="row" spacing={3}>
         <Button
-          href="/login"
+          href="/blogs"
           variant="contained"
           sx={{ fontSize: "1.3rem", fontWeight: 700 }}
         >
           {" "}
-          Login
+          start reading
         </Button>
         <Button
           href="/register"

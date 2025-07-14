@@ -52,7 +52,7 @@ function Navbar({ isDarkMode, toggleTheme }: Props) {
             spacing={3}
             sx={{ alignItems: "center", fontSize: "1.3rem", fontWeight: 700 }}
           >
-            <Link href="/dashboard">Blogs</Link>
+            <Link href="/blogs">Blogs</Link>
             <Link href="/blogs/create">Create Blog</Link>
             <Link href="/user/profile">Profile</Link>
             <Button color="error" onClick={handleLogout}>
@@ -92,7 +92,7 @@ function Navbar({ isDarkMode, toggleTheme }: Props) {
     );
   } else {
     return (
-      <AppBar color="transparent" elevation={0} sx={{ mt: 2 }}>
+      <AppBar position="static" color="transparent" elevation={0} sx={{ mt: 2 }}>
         <Toolbar
           sx={{
             justifyContent: "space-between",
@@ -111,7 +111,7 @@ function Navbar({ isDarkMode, toggleTheme }: Props) {
               variant="outlined"
               sx={{ fontSize: "1.3rem", fontWeight: 700 }}
             >
-              Login
+              SignIn
             </Button>
             <Button
               href="/register"
